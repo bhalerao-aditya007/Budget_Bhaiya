@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Bhaiya - Student Expense Tracker</title>
+    <link rel="stylesheet" href="Stylings.css">
+    <!-- Font -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body class="light-mode">
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <i class="fas fa-wallet"></i>
+                <h1>Budget Bhaiya</h1>
+            </div>
+            <div class="nav-controls">
+                <button id="theme-toggle" aria-label="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="dashboard">
+            <div class="budget-container">
+                <div class="budget-header">
+                    <h2>Monthly Budget</h2>
+                    <button id="set-budget-btn" class="btn">Set Budget</button>
+                </div>
+                <div class="budget-details">
+                    <div class="budget-amount">
+                        <span id="budget-amount">₹0</span>
+                    </div>
+                    <div class="spent-amount">
+                        <span>Spent: </span>
+                        <span id="spent-amount">₹0</span>
+                    </div>
+                    <div class="remaining-amount">
+                        <span>Remaining: </span>
+                        <span id="remaining-amount">₹0</span>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+            </div>
+
+            <div class="summary-cards">
+                <div class="card" data-category="food">
+                    <div class="card-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>Food</h3>
+                        <p id="food-total">₹0</p>
+                    </div>
+                </div>
+                <div class="card" data-category="travel">
+                    <div class="card-icon">
+                        <i class="fas fa-bus"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>Travel</h3>
+                        <p id="travel-total">₹0</p>
+                    </div>
+                </div>
+                <div class="card" data-category="stationery">
+                    <div class="card-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>Stationery</h3>
+                        <p id="stationery-total">₹0</p>
+                    </div>
+                </div>
+                <div class="card" data-category="misc">
+                    <div class="card-icon">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                    <div class="card-info">
+                        <h3>Miscellaneous</h3>
+                        <p id="misc-total">₹0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="expense-chart"></canvas>
+            </div>
+        </section>
+
+        <section class="expense-manager">
+            <div class="form-container">
+                <h2>Add Expense</h2>
+                <form id="expense-form">
+                    <div class="form-group">
+                        <label for="amount">Amount (₹)</label>
+                        <input type="number" id="amount" min="1" step="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category" required>
+                            <option value="">Select Category</option>
+                            <option value="food">Food</option>
+                            <option value="travel">Travel</option>
+                            <option value="stationery">Stationery</option>
+                            <option value="misc">Miscellaneous</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" id="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">Notes (Optional)</label>
+                        <textarea id="notes" rows="2"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Expense</button>
+                </form>
+            </div>
+
+            <div class="expense-list-container">
+                <div class="expense-header">
+                    <h2>Expense History</h2>
+                    <div class="filter-controls">
+                        <select id="filter-category">
+                            <option value="all">All Categories</option>
+                            <option value="food">Food</option>
+                            <option value="travel">Travel</option>
+                            <option value="stationery">Stationery</option>
+                            <option value="misc">Miscellaneous</option>
+                        </select>
+                        <select id="filter-period">
+                            <option value="all">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month" selected>This Month</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="expense-table-container">
+                    <table class="expense-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expense-items">
+                        </tbody>
+                    </table>
+                    <div id="no-expenses" class="no-expenses">No expenses found</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="budget-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Set Monthly Budget</h2>
+            <form id="budget-form">
+                <div class="form-group">
+                    <label for="budget-input">Budget Amount (₹)</label>
+                    <input type="number" id="budget-input" min="1" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Budget</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Edit Expense</h2>
+            <form id="edit-form">
+                <input type="hidden" id="edit-id">
+                <div class="form-group">
+                    <label for="edit-amount">Amount (₹)</label>
+                    <input type="number" id="edit-amount" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-category">Category</label>
+                    <select id="edit-category" required>
+                        <option value="food">Food</option>
+                        <option value="travel">Travel</option>
+                        <option value="stationery">Stationery</option>
+                        <option value="misc">Miscellaneous</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-date">Date</label>
+                    <input type="date" id="edit-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-notes">Notes (Optional)</label>
+                    <textarea id="edit-notes" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Expense</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="alert-toast" class="toast">
+        <div class="toast-content">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="alert-message">Budget limit exceeded!</span>
+        </div>
+    </div>
+
+    
+    <footer>
+        <p>&copy; 2025 Budget Bhaiya </p>
+    </footer>
+
+    <script src="JavaScript.js"></script>
+</body>
+</html>
